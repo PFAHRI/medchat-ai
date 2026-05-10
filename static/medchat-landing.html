@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedChat AI — Konsultasi Kesehatan</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-light: #E1F5EE;
+    --green-mid: #9FE1CB;
+    --bg: #F7FAF9;
+    --bg-card: #FFFFFF;
+    --text: #1A2B25;
+    --text-muted: #6B8C7E;
+    --border: #D4E8E0;
+    --blue-light: #EAF4FF;
+    --blue: #185FA5;
+    --amber-light: #FFF8EC;
+    --amber: #854F0B;
+    --purple-light: #F0EFFE;
+    --purple: #534AB7;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 2.5rem;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .nav-logo-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--green);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-logo-icon svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2; }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--green); }
+  .nav-cta {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 9px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background .2s;
+  }
+  .nav-cta:hover { background: var(--green-dark); }
+
+  /* HERO */
+  .hero {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem 2rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 99px;
+    margin-bottom: 1.5rem;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+  .badge-dot {
+    width: 7px; height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .6; transform: scale(1.3); }
+  }
+  .hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 42px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+  }
+  .hero h1 em { color: var(--green); font-style: normal; }
+  .hero p {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin-bottom: 2rem;
+    max-width: 440px;
+  }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .2s, transform .1s;
+  }
+  .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+  .btn-outline {
+    background: #fff;
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    padding: 12px 26px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color .2s;
+  }
+  .btn-outline:hover { border-color: var(--green); color: var(--green); }
+
+  /* CHAT CARD */
+  .chat-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(29,158,117,.08);
+  }
+  .chat-topbar {
+    background: var(--green);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .chat-avatar {
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .chat-avatar svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2; }
+  .chat-topbar-info { flex: 1; }
+  .chat-topbar-info strong { display: block; color: #fff; font-size: 14px; font-weight: 600; }
+  .chat-topbar-info span { color: rgba(255,255,255,.8); font-size: 12px; display: flex; align-items: center; gap: 5px; }
+  .online-dot { width: 6px; height: 6px; background: #A8F0D4; border-radius: 50%; }
+
+  .chat-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; min-height: 220px; }
+
+  .msg-row { display: flex; align-items: flex-end; gap: 8px; }
+  .msg-row.user { flex-direction: row-reverse; }
+
+  .msg-avatar-sm {
+    width: 28px; height: 28px;
+    background: var(--green-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .msg-avatar-sm svg { width: 15px; height: 15px; fill: none; stroke: var(--green); stroke-width: 2; }
+
+  .bubble {
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.55;
+    max-width: 78%;
+  }
+  .bubble-bot {
+    background: var(--bg);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .bubble-user {
+    background: var(--green);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-input-row {
+    margin: 0 1.25rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+  }
+  .chat-input-row span { flex: 1; font-size: 13px; color: var(--text-muted); }
+  .input-icons { display: flex; gap: 12px; }
+  .input-icons svg { width: 18px; height: 18px; fill: none; stroke: var(--text-muted); stroke-width: 2; cursor: pointer; transition: stroke .2s; }
+  .input-icons svg:last-child { stroke: var(--green); }
+  .input-icons svg:hover { stroke: var(--green); }
+
+  /* STATS */
+  .stats-bar {
+    background: #fff;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem;
+  }
+  .stats-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  .stat { text-align: center; }
+  .stat strong { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 600; color: var(--green); display: block; }
+  .stat span { font-size: 13px; color: var(--text-muted); }
+
+  /* FEATURES */
+  .section { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem; }
+  .section-label {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--green);
+    margin-bottom: .75rem;
+  }
+  .section-title {
+    text-align: center;
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: .75rem;
+  }
+  .section-sub {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    line-height: 1.7;
+  }
+
+  .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .feat-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: border-color .2s, transform .2s;
+  }
+  .feat-card:hover { border-color: var(--green); transform: translateY(-3px); }
+  .feat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .feat-icon svg { width: 22px; height: 22px; fill: none; stroke-width: 2; }
+  .feat-card h3 { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .feat-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* HOW IT WORKS */
+  .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .how-step { text-align: center; }
+  .step-num {
+    width: 48px; height: 48px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  .how-step h4 { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .how-step p { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+
+  /* LAYER */
+  .layer-stack { display: flex; flex-direction: column; gap: 12px; max-width: 700px; margin: 0 auto; }
+  .layer-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    position: relative;
+    transition: border-color .2s;
+  }
+  .layer-card:hover { border-color: var(--green); }
+  .layer-num {
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--border);
+    min-width: 40px;
+  }
+  .layer-info h4 { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .layer-info p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .layer-badge {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+  .arrow-down {
+    text-align: center;
+    color: var(--border);
+    font-size: 20px;
+    margin: -4px 0;
+  }
+
+  /* CTA SECTION */
+  .cta-section {
+    background: var(--green);
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .cta-section h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: .75rem;
+  }
+  .cta-section p { color: rgba(255,255,255,.8); font-size: 15px; margin-bottom: 2rem; }
+  .btn-white {
+    background: #fff;
+    color: var(--green-dark);
+    border: none;
+    padding: 13px 30px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Sora', sans-serif;
+    transition: transform .2s;
+  }
+  .btn-white:hover { transform: translateY(-2px); }
+  .tags { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+  .tag {
+    background: rgba(255,255,255,.15);
+    color: rgba(255,255,255,.9);
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 99px;
+    border: 1px solid rgba(255,255,255,.3);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--text);
+    color: rgba(255,255,255,.5);
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 13px;
+  }
+  footer span { color: var(--green-mid); }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    background: #FFFBEA;
+    border: 1px solid #F0D080;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+  }
+  .disclaimer svg { width: 18px; height: 18px; fill: none; stroke: #854F0B; stroke-width: 2; flex-shrink: 0; margin-top: 1px; }
+  .disclaimer p { font-size: 13px; color: #6B4C00; line-height: 1.6; }
+
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.25rem 2rem; }
+    .hero h1 { font-size: 28px; }
+    .how-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18"/></svg>
+    </div>
+    MedChat AI
+  </div>
+  <div class="nav-links">
+    <a href="#">Fitur</a>
+    <a href="#">Cara Kerja</a>
+  </div>
+  <a href="/chat" class="nav-cta" style="text-decoration:none">Mulai Gratis</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-badge"><span class="badge-dot"></span> AI Health Assistant</div>
+    <h1>Konsultasi Kesehatan<br><em>Kapan Saja,</em><br>Di Mana Saja</h1>
+    <p>Chatbot berbasis AI yang siap menjawab pertanyaan seputar kesehatan kamu — lewat teks, suara, maupun foto gejala. Cepat, akurat, dan mudah digunakan.</p>
+    <div class="hero-btns">
+      <a href="/chat" class="btn-primary" style="text-decoration:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Mulai Konsultasi
+      </a>
+      <button class="btn-outline" onclick="document.getElementById('fitur').scrollIntoView({behavior:'smooth'})">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+        Pelajari Lebih Lanjut
+      </button>
+    </div>
+  </div>
+
+  <!-- CHAT PREVIEW -->
+  <div class="chat-card">
+    <div class="chat-topbar">
+      <div class="chat-avatar">
+        <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 015 5v2a5 5 0 01-10 0V7a5 5 0 015-5z"/><path d="M19 21H5a4 4 0 014-4h6a4 4 0 014 4z"/></svg>
+      </div>
+      <div class="chat-topbar-info">
+        <strong>MedChat AI</strong>
+        <span><span class="online-dot"></span>Online — Siap membantu</span>
+      </div>
+    </div>
+    <div class="chat-body">
+      <div class="msg-row user">
+        <div class="bubble bubble-user">Kepala saya sakit sejak tadi pagi, apa ya penyebabnya?</div>
+        <div class="msg-avatar-sm" style="background:#E6F1FB">
+          <svg viewBox="0 0 24 24" style="stroke:#185FA5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+      </div>
+      <div class="msg-row">
+        <div class="msg-avatar-sm">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 015 5v2a5 5 0 01-10 0V7a5 5 0 015-5z"/></svg>
+        </div>
+        <div class="bubble bubble-bot">Sakit kepala bisa disebabkan banyak hal seperti dehidrasi, kurang tidur, atau stres. Sudah minum air cukup hari ini? Apakah disertai gejala lain?</div>
+      </div>
+      <div class="msg-row user">
+        <div class="bubble bubble-user">Belum minum banyak air, dan sedikit mual</div>
+        <div class="msg-avatar-sm" style="background:#E6F1FB">
+          <svg viewBox="0 0 24 24" style="stroke:#185FA5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+      </div>
+      <div class="msg-row">
+        <div class="msg-avatar-sm">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 015 5v2a5 5 0 01-10 0V7a5 5 0 015-5z"/></svg>
+        </div>
+        <div class="bubble bubble-bot">Kemungkinan besar karena dehidrasi. Coba minum 2 gelas air sekarang dan istirahat. Jika mual berlanjut lebih dari 6 jam, saya sarankan konsultasi ke dokter ya. 💙</div>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <span>Tulis pertanyaan kesehatan...</span>
+      <div class="input-icons">
+        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg>
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- FEATURES -->
+<div class="section">
+  <p class="section-label">Fitur Unggulan</p>
+  <h2 class="section-title">Semua yang kamu butuhkan</h2>
+  <p class="section-sub">Dirancang untuk memudahkan akses informasi kesehatan, khususnya di daerah yang jauh dari fasilitas medis.</p>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon" style="background:var(--green-light)">
+        <svg stroke="var(--green-dark)" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg>
+      </div>
+      <h3>Input Suara</h3>
+      <p>Ceritakan gejala kamu cukup dengan berbicara, tanpa perlu mengetik.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:var(--blue-light)">
+        <svg stroke="var(--blue)" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>
+      <h3>Analisis Foto</h3>
+      <p>Upload foto gejala seperti ruam atau luka untuk analisis visual berbasis AI.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:var(--amber-light)">
+        <svg stroke="var(--amber)" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      </div>
+      <h3>AI Cerdas Berlapis</h3>
+      <p>Tiga layer teknologi AI memastikan jawaban yang akurat sesuai kompleksitas pertanyaan.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:var(--purple-light)">
+        <svg stroke="var(--purple)" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h3>Privat & Aman</h3>
+      <p>Data percakapan kamu terlindungi dan tidak pernah dibagikan ke pihak manapun.</p>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div style="background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="section">
+    <p class="section-label">Cara Kerja</p>
+    <h2 class="section-title">Mudah dalam 3 langkah</h2>
+    <p class="section-sub">Tidak perlu daftar atau login. Langsung tanya dan dapatkan jawaban.</p>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="step-num">1</div>
+        <h4>Sampaikan Pertanyaan</h4>
+        <p>Ketik pertanyaan, rekam suara, atau upload foto gejala yang kamu alami.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">2</div>
+        <h4>AI Memproses</h4>
+        <p>Sistem memilih layer terbaik — Rule-based, NLP, atau LLM — sesuai kompleksitas pertanyaan.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">3</div>
+        <h4>Terima Jawaban</h4>
+        <p>Dapatkan penjelasan yang jelas, akurat, beserta saran tindak lanjut yang relevan.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+</body>
+</html>

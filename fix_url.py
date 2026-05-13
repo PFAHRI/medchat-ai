@@ -1,0 +1,8 @@
+f = open('static/medchat-chat.html', 'r', encoding='utf-8')
+c = f.read()
+f.close()
+c = c.replace('http://127.0.0.1:5000/api/chat', '/api/chat')
+f = open('static/medchat-chat.html', 'w', encoding='utf-8')
+f.write(c)
+f.close()
+print('DONE!')
